@@ -1,5 +1,6 @@
 package com.telda.teldamovies.core.domain.ListMovies.presentation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,16 +54,28 @@ fun MoviesListScreen(
             colors = TextFieldDefaults.textFieldColors(containerColor = MaterialTheme.colorScheme.surface)
         )
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            itemsIndexed(movies) { index, movie ->
-                MovieItem(movie = movie, isInWatchlist = false) {
-                    onMovieClick(movie)
-                }
+        if (searchQuery.isNotEmpty() && movies.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No match found",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                itemsIndexed(movies) { index, movie ->
+                    MovieItem(movie = movie, isInWatchlist = false) {
+                        onMovieClick(movie)
+                    }
 
-                // Trigger pagination when the user scrolls near the end
-                if (index >= movies.size - 5 && searchQuery.isEmpty()) {
-                    LaunchedEffect(Unit) {
-                        viewModel.loadPopularMovies()
+                    // Trigger pagination when the user scrolls near the end
+                    if (index >= movies.size - 5 && searchQuery.isEmpty()) {
+                        LaunchedEffect(Unit) {
+                            viewModel.loadPopularMovies()
+                        }
                     }
                 }
             }
@@ -71,34 +85,6 @@ fun MoviesListScreen(
     // Initial load when no search query
     LaunchedEffect(Unit) {
         if (movies.isEmpty() && searchQuery.isEmpty()) {
-            viewModel.loadPopularMovies()
-        }
-    }
-}
-
-
-@Composable
-fun MoviesListScreenold(viewModel: MoviesListViewModel = hiltViewModel(), onMovieClick: (Movie) -> Unit) {
-    val movies = viewModel.movies
-
-    LazyColumn {
-        itemsIndexed(movies) { index, movie ->
-            MovieItem(movie = movie, isInWatchlist = false) {
-                onMovieClick(movie)
-            }
-
-            // Trigger pagination when the user scrolls near the end
-            if (index >= movies.size - 5) {
-                LaunchedEffect(Unit) {
-                    viewModel.loadPopularMovies()
-                }
-            }
-        }
-    }
-
-    // Initial load
-    LaunchedEffect(Unit) {
-        if (movies.isEmpty()) {
             viewModel.loadPopularMovies()
         }
     }
