@@ -83,4 +83,11 @@ dependencies {
     kapt(libs.androidx.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    // Room
+    implementation(libs.androidx.room.ktx)
+    androidTestImplementation(project(":app"))
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.paging)
+
+
 }
