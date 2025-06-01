@@ -77,7 +77,7 @@ fun DetailsScreen(
                     Text("Revenue: $${it.revenue ?: 0}", style = MaterialTheme.typography.bodyMedium)
                     Text("Release: ${it.releaseDate}", style = MaterialTheme.typography.bodySmall)
                     Text("Status: ${it.status}", style = MaterialTheme.typography.bodySmall)
-                    Button(onClick = { /* Add to watchlist logic */ }) {
+                    Button(onClick = { viewModel.addToWatchList() }) {
                         Text("Add to Watchlist")
                     }
                     Spacer(modifier = Modifier.height(16.dp))

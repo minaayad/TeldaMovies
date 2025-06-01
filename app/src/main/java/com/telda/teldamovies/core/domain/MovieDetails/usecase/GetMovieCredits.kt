@@ -4,7 +4,7 @@ import com.telda.teldamovies.core.data.model.Credits
 import com.telda.teldamovies.core.data.repository.MovieRepository
 import javax.inject.Inject
 
-class GetMovieCreditsUseCase @Inject constructor(
+class GetMovieCredits @Inject constructor(
     private val repository: MovieRepository
 ) {
     suspend operator fun invoke(movieId: Int): Credits

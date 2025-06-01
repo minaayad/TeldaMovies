@@ -9,18 +9,20 @@ import com.telda.teldamovies.core.data.model.Cast
 import com.telda.teldamovies.core.data.model.Crew
 import com.telda.teldamovies.core.data.model.Movie
 import com.telda.teldamovies.core.data.model.MovieDetails
-import com.telda.teldamovies.core.domain.MovieDetails.usecase.GetMovieCreditsUseCase
-import com.telda.teldamovies.core.domain.MovieDetails.usecase.GetMovieDetailsUseCase
-import com.telda.teldamovies.core.domain.MovieDetails.usecase.GetSimilarMoviesUseCase
+import com.telda.teldamovies.core.domain.MovieDetails.usecase.GetMovieCredits
+import com.telda.teldamovies.core.domain.MovieDetails.usecase.GetMovieDetails
+import com.telda.teldamovies.core.domain.MovieDetails.usecase.GetSimilarMovies
+import com.telda.teldamovies.core.domain.MovieDetails.usecase.AddToWatchList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val getMovieDetailsUseCase: GetMovieDetailsUseCase,
-    private val getSimilarMoviesUseCase: GetSimilarMoviesUseCase,
-    private val getMovieCreditsUseCase: GetMovieCreditsUseCase
+    private val getMovieDetailsUseCase: GetMovieDetails,
+    private val getSimilarMoviesUseCase: GetSimilarMovies,
+    private val getMovieCreditsUseCase: GetMovieCredits,
+    private val addToWatchListUseCase: AddToWatchList
 ) : ViewModel() {
 
     var movieDetails by mutableStateOf<MovieDetails?>(null)
@@ -58,6 +60,13 @@ class DetailViewModel @Inject constructor(
 
             topActors = allActors
             topDirectors = allDirectors
+        }
+    }
+
+    fun addToWatchList() {
+        val movie = movieDetails ?: return
+        viewModelScope.launch {
+            addToWatchListUseCase(movie)
         }
     }
 }

@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.telda.teldamovies.core.data.model.Movie
-import com.telda.teldamovies.core.domain.ListMovies.usecase.GetPopularMoviesUseCase
-import com.telda.teldamovies.core.domain.ListMovies.usecase.SearchMovieUseCase
+import com.telda.teldamovies.core.domain.ListMovies.usecase.GetPopularMovies
+import com.telda.teldamovies.core.domain.ListMovies.usecase.SearchMovie
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
@@ -14,8 +14,8 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MoviesListViewModel @Inject constructor(
-    private val getPopularMoviesUseCase: GetPopularMoviesUseCase,
-    private val searchMovieUseCase: SearchMovieUseCase
+    private val getPopularMoviesUseCase: GetPopularMovies,
+    private val searchMovieUseCase: SearchMovie
 ) : ViewModel() {
 
     var movies by mutableStateOf<List<Movie>>(emptyList())
