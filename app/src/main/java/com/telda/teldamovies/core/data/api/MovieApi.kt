@@ -1,8 +1,7 @@
 package com.telda.teldamovies.core.data.api
 
-import com.telda.teldamovies.core.data.model.PopularMoviesResponse
+import com.telda.teldamovies.core.data.model.MoviesResponse
 import retrofit2.http.GET
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface MovieApi {
@@ -10,13 +9,16 @@ interface MovieApi {
     suspend fun getPopularMovies(
         @Query("language") language: String,
         @Query("page") page: Int
-    ): PopularMoviesResponse
+    ): MoviesResponse
 
-//    @GET("search/movie")
-//    suspend fun searchMovies(
-//        @Query("query") query: String
-//    ): MovieResponse
-//
+    @GET("search/movie")
+    suspend fun searchMovies(
+        @Query("query") query: String,
+        @Query("include_adult") includeAdult: Boolean = false,
+        @Query("language") language: String = "en-US",
+        @Query("page") page: Int = 1
+    ): MoviesResponse
+
 //    @GET("movie/{movie_id}")
 //    suspend fun getMovieDetails(
 //        @Path("movie_id") movieId: Int,

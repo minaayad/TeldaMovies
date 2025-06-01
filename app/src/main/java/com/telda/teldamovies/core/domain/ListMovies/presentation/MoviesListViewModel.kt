@@ -54,8 +54,7 @@ class MoviesListViewModel @Inject constructor(
 
     fun searchMovies(query: String) {
         viewModelScope.launch {
-            // You can apply a similar paging logic here if desired
-//            movies = repository.searchMovies(query).results
+            movies = repository.searchMovies(query).results
         }
     }
 }

@@ -2,7 +2,7 @@ package com.telda.teldamovies.core.data.model
 
 
 
-data class PopularMoviesResponse(
+data class MoviesResponse(
     val page: Int,
     val results: List<Movie>
 )
