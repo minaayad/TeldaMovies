@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -15,20 +16,33 @@ import retrofit2.converter.gson.GsonConverterFactory
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    @Provides
-    fun provideAuthInterceptor(): Interceptor = AuthInterceptor()
+    val baseUrl = "https://api.themoviedb.org/3/"
 
     @Provides
-    fun provideOkHttpClient(authInterceptor: Interceptor): OkHttpClient {
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor {
+        return HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+    }
+
+    @Provides
+    fun provideAuthInterceptor(): AuthInterceptor = AuthInterceptor()
+
+    @Provides
+    fun provideOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        authInterceptor: AuthInterceptor
+    ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
+            .addInterceptor(loggingInterceptor)
             .build()
     }
 
-
     @Provides
-    fun provideRetrofit(): Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.themoviedb.org/3/")
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
+        .baseUrl(baseUrl)
+        .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 

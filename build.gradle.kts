@@ -2,7 +2,7 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.jetbrains.kotlin.android) apply false
-    id("com.google.devtools.ksp") version "1.8.10-1.0.9" apply false
-    id("com.android.library") version "8.1.1" apply false
+    alias(libs.plugins.daggerHiltAndroid) apply false
+    alias(libs.plugins.jetbrainsKotlinSerialization) apply false
 
 }
