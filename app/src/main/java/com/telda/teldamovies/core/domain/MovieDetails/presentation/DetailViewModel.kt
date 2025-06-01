@@ -9,14 +9,18 @@ import com.telda.teldamovies.core.data.model.Cast
 import com.telda.teldamovies.core.data.model.Crew
 import com.telda.teldamovies.core.data.model.Movie
 import com.telda.teldamovies.core.data.model.MovieDetails
-import com.telda.teldamovies.core.data.repository.MovieRepository
+import com.telda.teldamovies.core.domain.MovieDetails.usecase.GetMovieCreditsUseCase
+import com.telda.teldamovies.core.domain.MovieDetails.usecase.GetMovieDetailsUseCase
+import com.telda.teldamovies.core.domain.MovieDetails.usecase.GetSimilarMoviesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val repository: MovieRepository
+    private val getMovieDetailsUseCase: GetMovieDetailsUseCase,
+    private val getSimilarMoviesUseCase: GetSimilarMoviesUseCase,
+    private val getMovieCreditsUseCase: GetMovieCreditsUseCase
 ) : ViewModel() {
 
     var movieDetails by mutableStateOf<MovieDetails?>(null)
@@ -33,12 +37,12 @@ class DetailViewModel @Inject constructor(
 
     fun loadMovieData(movieId: Int) {
         viewModelScope.launch {
-            val details = repository.getMovieDetails(movieId)
-            val similars = repository.getSimilarMovies(movieId).results.take(5)
+            val details = getMovieDetailsUseCase(movieId)
+            val similars = getSimilarMoviesUseCase(movieId).results.take(5)
             movieDetails = details
             similarMovies = similars
 
-            val allCredits = similars.map { repository.getMovieCredits(it.id) }
+            val allCredits = similars.map { getMovieCreditsUseCase(it.id) }
 
             val allActors = allCredits.flatMap { it.cast }
                 .filter { it.knownForDepartment == "Acting" }

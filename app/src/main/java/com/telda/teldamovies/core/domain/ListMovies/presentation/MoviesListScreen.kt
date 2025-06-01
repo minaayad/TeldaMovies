@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,6 +44,11 @@ fun MoviesListScreen(
 ) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
     val movies = viewModel.movies
+
+    // Group movies by year (descending)
+    val moviesByYear = movies.groupBy { movie ->
+        movie.release_date?.take(4) ?: "Unknown"
+    }.toSortedMap(compareByDescending { it })
 
     Scaffold(
         modifier = Modifier.background(Color.Transparent),
@@ -99,15 +105,31 @@ fun MoviesListScreen(
                         .background(Color.Transparent)
                         .padding(start = 16.dp, end = 16.dp, top = 16.dp)
                 ) {
-                    itemsIndexed(movies) { index, movie ->
-                        MovieGridItem(
-                            movie = movie,
-                            onClick = { onMovieClick(movie) }
-                        )
+                    moviesByYear.forEach { (year, moviesOfYear) ->
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Text(
+                                text = year,
+                                style = MaterialTheme.typography.headlineLarge,
+                                modifier = Modifier
+                                    .padding(vertical = 8.dp)
+                                    .padding(horizontal = 16.dp)
+                                    .fillMaxWidth(),
+                                color = Color.Black
+                            )
+                        }
+                        items(moviesOfYear.size) { index ->
+                            val movie = moviesOfYear[index]
+                            MovieGridItem(
+                                movie = movie,
+                                onClick = { onMovieClick(movie) }
+                            )
 
-                        if (index >= movies.size - 5 && searchQuery.isEmpty()) {
-                            LaunchedEffect(Unit) {
-                                viewModel.loadPopularMovies()
+                            // Keep pagination logic here, using the global movies list
+                            val globalIndex = movies.indexOf(movie)
+                            if (globalIndex >= movies.size - 5 && searchQuery.isEmpty()) {
+                                LaunchedEffect(Unit) {
+                                    viewModel.loadPopularMovies()
+                                }
                             }
                         }
                     }

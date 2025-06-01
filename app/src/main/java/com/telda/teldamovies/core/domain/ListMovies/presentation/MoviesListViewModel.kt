@@ -5,7 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.telda.teldamovies.core.data.model.Movie
-import com.telda.teldamovies.core.data.repository.MovieRepository
+import com.telda.teldamovies.core.domain.ListMovies.usecase.GetPopularMoviesUseCase
+import com.telda.teldamovies.core.domain.ListMovies.usecase.SearchMovieUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
@@ -13,7 +14,8 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MoviesListViewModel @Inject constructor(
-    private val repository: MovieRepository
+    private val getPopularMoviesUseCase: GetPopularMoviesUseCase,
+    private val searchMovieUseCase: SearchMovieUseCase
 ) : ViewModel() {
 
     var movies by mutableStateOf<List<Movie>>(emptyList())
@@ -29,7 +31,7 @@ class MoviesListViewModel @Inject constructor(
         isLoading = true
         viewModelScope.launch {
             try {
-                val response = repository.getPopularMovies(language, currentPage)
+                val response = getPopularMoviesUseCase(language, currentPage)
                 val newMovies = response.results
 
                 if (newMovies.isEmpty()) {
@@ -54,7 +56,7 @@ class MoviesListViewModel @Inject constructor(
 
     fun searchMovies(query: String) {
         viewModelScope.launch {
-            movies = repository.searchMovies(query).results
+            movies = searchMovieUseCase(query).results
         }
     }
 }
