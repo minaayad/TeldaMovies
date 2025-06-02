@@ -41,7 +41,10 @@ fun NavGraph(navController: NavHostController) {
             val movieId = backStackEntry.arguments?.getInt("movieId") ?: return@composable
             DetailsScreen(
                 movieId = movieId,
-                navController = navController
+                navController = navController,
+                onMovieClick = { movie ->
+                    navController.navigate(Screen.MovieDetails.createRoute(movie.id))
+                }
             )
         }
     }

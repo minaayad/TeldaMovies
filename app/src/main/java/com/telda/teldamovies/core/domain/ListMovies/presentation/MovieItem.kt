@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -36,16 +38,22 @@ import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.telda.teldamovies.R
 import com.telda.teldamovies.core.data.model.Movie
+import androidx.compose.ui.graphics.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 
 
 @Composable
 fun MovieGridItem(
     movie: Movie,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isMovieInWatchlist: Boolean = false,
 ) {
     Card(
         modifier = Modifier
             .wrapContentSize()
+            .width(200.dp)
             .padding(10.dp)
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(8.dp)
@@ -100,6 +108,7 @@ fun MovieGridItem(
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
+                    .fillMaxWidth()
                     .background(androidx.compose.ui.graphics.Color.LightGray.copy(alpha = 0.7f))
                     .padding(6.dp)
             ) {
@@ -118,6 +127,7 @@ fun MovieGridItem(
                         )
                     )
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.align(Alignment.End)
@@ -131,13 +141,28 @@ fun MovieGridItem(
                         text = movie.vote_average.toString(),
                         textAlign = TextAlign.Start,
                         modifier = Modifier
-                            .fillMaxWidth()
                             .padding(start = 8.dp),
                         fontWeight = FontWeight.Bold,
                         color = androidx.compose.ui.graphics.Color.Black,
                         maxLines = 2
                     )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        Icon(
+                            imageVector = if (isMovieInWatchlist) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            contentDescription = if (isMovieInWatchlist) "In Watchlist" else "Not in Watchlist",
+                            tint = if (isMovieInWatchlist) androidx.compose.ui.graphics.Color.Red else androidx.compose.ui.graphics.Color.Black,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(end = 8.dp)
+                        )
+
+                    }
+
                 }
+
             }
         }
     }

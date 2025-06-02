@@ -10,15 +10,20 @@ import com.telda.teldamovies.core.domain.ListMovies.usecase.SearchMovie
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
+import com.telda.teldamovies.core.data.local.WatchlistEntity
+import com.telda.teldamovies.core.domain.ListMovies.usecase.GetWatchList
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MoviesListViewModel @Inject constructor(
     private val getPopularMoviesUseCase: GetPopularMovies,
-    private val searchMovieUseCase: SearchMovie
+    private val searchMovieUseCase: SearchMovie,
+    private val getWatchListUseCase: GetWatchList
 ) : ViewModel() {
 
     var movies by mutableStateOf<List<Movie>>(emptyList())
+        private set
+    var watchlistIds by mutableStateOf<Set<Int>>(emptySet())
         private set
 
     private var currentPage = 1
@@ -40,6 +45,7 @@ class MoviesListViewModel @Inject constructor(
                     movies = movies + newMovies
                     currentPage++
                 }
+                updateWatchlistStatus()
             } catch (e: Exception) {
                 // Log or handle error
             } finally {
@@ -57,6 +63,22 @@ class MoviesListViewModel @Inject constructor(
     fun searchMovies(query: String) {
         viewModelScope.launch {
             movies = searchMovieUseCase(query).results
+            updateWatchlistStatus()
+        }
+    }
+
+//    suspend fun isMovieInWatchlist(movieId: Int): Boolean {
+//        return isInWatchlistUseCase(movieId)
+//    }
+
+    fun updateWatchlistStatus() {
+        viewModelScope.launch {
+            val watchList = getWatchListUseCase()
+            val inWatchlist = movies
+                .map { it.id }
+                .filter { id -> watchList.any { it.movieId == id } }
+                .toSet()
+            watchlistIds = inWatchlist
         }
     }
 }

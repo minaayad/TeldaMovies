@@ -50,6 +50,10 @@ fun MoviesListScreen(
         movie.release_date?.take(4) ?: "Unknown"
     }.toSortedMap(compareByDescending { it })
 
+    LaunchedEffect(Unit) {
+        viewModel.updateWatchlistStatus()
+    }
+
     Scaffold(
         modifier = Modifier.background(Color.Transparent),
         topBar = {
@@ -121,7 +125,8 @@ fun MoviesListScreen(
                             val movie = moviesOfYear[index]
                             MovieGridItem(
                                 movie = movie,
-                                onClick = { onMovieClick(movie) }
+                                onClick = { onMovieClick(movie) },
+                                isMovieInWatchlist = viewModel.watchlistIds.contains(movie.id)
                             )
 
                             // Keep pagination logic here, using the global movies list
