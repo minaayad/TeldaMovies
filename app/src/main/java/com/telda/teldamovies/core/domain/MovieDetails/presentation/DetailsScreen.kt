@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,6 +54,7 @@ fun DetailsScreen(
     val similar = viewModel.similarMovies
     val actors = viewModel.topActors
     val directors = viewModel.topDirectors
+    val isInWatchlist = viewModel.isInWatchlist
 
     LaunchedEffect(movieId) {
         viewModel.loadMovieData(movieId)
@@ -129,8 +131,22 @@ fun DetailsScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    Button(onClick = { viewModel.addToWatchList() }) {
-                        Text("Add to Watchlist")
+                    Button(
+                        onClick = {
+                            if (isInWatchlist) {
+                                viewModel.removeFromWatchList()
+                            } else {
+                                viewModel.addToWatchList()
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isInWatchlist) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Text(
+                            if (isInWatchlist) "Remove from Watchlist" else "Add to Watchlist",
+                            color = if (isInWatchlist) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
